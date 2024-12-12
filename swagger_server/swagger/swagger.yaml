@@ -1,0 +1,51 @@
+openapi: 3.0.1
+info:
+  title: LOGIN-MS
+  description: Microservicio para verificar el tipo de usuario.
+  version: 1.0.0
+servers:
+- url: http://localhost:2045/api/v1
+  description: Servidor local
+paths:
+  /verificar-tipo-usuario:
+    post:
+      summary: Verificar tipo de usuario
+      description: Recibe un correo y devuelve el tipo de usuario asociado.
+      operationId: verificar_tipo_usuario_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificarUsuarioRequest'
+        required: true
+      responses:
+        "200":
+          description: Tipo de usuario obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificarUsuarioResponse'
+        "400":
+          description: Datos inválidos proporcionados.
+        "404":
+          description: Usuario no encontrado.
+        "500":
+          description: Error interno del servidor.
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    VerificarUsuarioRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: juan.perez@example.com
+    VerificarUsuarioResponse:
+      type: object
+      properties:
+        tipo_usuario:
+          type: string
+          example: Administrador
+      example:
+        tipo_usuario: Administrador
+
