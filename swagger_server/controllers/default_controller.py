@@ -1,4 +1,4 @@
-from  import request, jsonify
+from flask import request, jsonify
 
 
 from swagger_server.models.verificar_usuario_request import VerificarUsuarioRequest  # noqa: E501
