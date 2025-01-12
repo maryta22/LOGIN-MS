@@ -4,7 +4,7 @@ info:
   description: Microservicio para verificar el tipo de usuario.
   version: 1.0.0
 servers:
-- url: http://localhost:2045/api/v1
+- url: http://localhost:2045
   description: Servidor local
 paths:
   /verificar-tipo-usuario:
