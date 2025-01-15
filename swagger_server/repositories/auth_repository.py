@@ -51,9 +51,8 @@ class AuthRepository:
                     "user_data": {
                         **user.to_dict(),
                         "additional_info": {
-                            "creation_date": admin.creation_date.strftime('%Y-%m-%d'),
-                            "modification_date": admin.modification_date.strftime(
-                                '%Y-%m-%d') if admin.modification_date else None
+                            "creation_date": admin.creation_date.strftime('%Y-%m-%d') if admin.creation_date else None,
+                            "modification_date": admin.modification_date.strftime('%Y-%m-%d') if admin.modification_date else None
                         }
                     }
                 }
