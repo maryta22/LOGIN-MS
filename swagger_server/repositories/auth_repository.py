@@ -15,10 +15,11 @@ load_dotenv()
 
 class AuthRepository:
     def __init__(self):
-        db_password = os.getenv('DB_PASSWORD')
-        self.engine = create_engine(f'mysql+pymysql://root:{db_password}@localhost:3306/espae_prospections')
+        #db_password = os.getenv('DB_PASSWORD')
+        #self.engine = create_engine(f'mysql+pymysql://root:{db_password}@localhost:3306/espae_prospections')
+        self.engine = create_engine('mysql+pymysql://root:root@localhost:3306/espae_prospections')
         self.Session = sessionmaker(bind=self.engine)
-    
+
     def auth_email(self, email):
         session = self.Session()
         try:
@@ -28,9 +29,10 @@ class AuthRepository:
                     "role": "invalid",
                     "user_data": None
                 }
+
             # Buscar el usuario por email
             user = session.query(User).filter(User.email == email).first()
-            
+
             if not user:
                 return {
                     "error": "No registrado como usuario activo. Contáctese con el Administrador",
@@ -43,11 +45,18 @@ class AuthRepository:
                 Administrator.id_user == user.id,
                 Administrator.state == 1
             ).first()
-            
+
             if admin:
                 return {
                     "role": "admin",
-                    "user_data": user.to_dict()
+                    "user_data": {
+                        **user.to_dict(),
+                        "additional_info": {
+                            "creation_date": admin.creation_date.strftime('%Y-%m-%d'),
+                            "modification_date": admin.modification_date.strftime(
+                                '%Y-%m-%d') if admin.modification_date else None
+                        }
+                    }
                 }
 
             # Verificar si es vendedor
@@ -55,11 +64,16 @@ class AuthRepository:
                 SalesAdvisor.id_user == user.id,
                 SalesAdvisor.state == 1
             ).first()
-            
+
             if sales_advisor:
                 return {
                     "role": "user",
-                    "user_data": user.to_dict()
+                    "user_data": {
+                        **user.to_dict(),
+                        "additional_info": {
+                            "sales_advisor_id": sales_advisor.id
+                        }
+                    }
                 }
 
             return {
@@ -69,7 +83,7 @@ class AuthRepository:
             }
 
         except Exception as e:
-            print(f"Error en auth_email: {str(e)}")
+            logging.error(f"Error en auth_email: {str(e)}")
             return {
                 "error": f"Error directo: {str(e)}",
                 "role": "invalid",
@@ -77,3 +91,4 @@ class AuthRepository:
             }
         finally:
             session.close()
+
