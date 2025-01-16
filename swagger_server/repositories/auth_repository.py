@@ -15,9 +15,8 @@ load_dotenv()
 
 class AuthRepository:
     def __init__(self):
-        #db_password = os.getenv('DB_PASSWORD')
-        #self.engine = create_engine(f'mysql+pymysql://root:{db_password}@localhost:3306/espae_prospections')
-        self.engine = create_engine('mysql+pymysql://root:root@localhost:3306/espae_prospections')
+        db_password = os.getenv('DB_PASSWORD')
+        self.engine = create_engine(f'mysql+pymysql://root:{db_password}@localhost:3306/espae_prospections')
         self.Session = sessionmaker(bind=self.engine)
 
     def auth_email(self, email):
@@ -59,9 +58,8 @@ class AuthRepository:
                     "user_data": {
                         **user.to_dict(),
                         "additional_info": {
-                            "creation_date": admin.creation_date.strftime('%Y-%m-%d'),
-                            "modification_date": admin.modification_date.strftime(
-                                '%Y-%m-%d') if admin.modification_date else None
+                            "creation_date": admin.creation_date.strftime('%Y-%m-%d') if admin.creation_date else None,
+                            "modification_date": admin.modification_date.strftime('%Y-%m-%d') if admin.modification_date else None
                         }
                     }
                 }
