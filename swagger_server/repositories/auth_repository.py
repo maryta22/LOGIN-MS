@@ -23,30 +23,37 @@ class AuthRepository:
     def auth_email(self, email):
         session = self.Session()
         try:
+            print("Iniciando auth_email")
+
             if not email:
+                print("No se proporcionó un correo")
                 return {
                     "error": "No se proporcionó un correo",
                     "role": "invalid",
                     "user_data": None
                 }
 
-            # Buscar el usuario por email
+            print(f"Buscando usuario con email: {email}")
             user = session.query(User).filter(User.email == email).first()
 
             if not user:
+                print("No se encontró el usuario en la base de datos")
                 return {
                     "error": "No registrado como usuario activo. Contáctese con el Administrador",
                     "role": "invalid",
                     "user_data": None
                 }
 
-            # Verificar si es administrador
+            print(f"Usuario encontrado: {user.to_dict()}")
+
+            print("Verificando si el usuario es administrador")
             admin = session.query(Administrator).filter(
                 Administrator.id_user == user.id,
                 Administrator.state == 1
             ).first()
 
             if admin:
+                print(f"Usuario es administrador: {admin}")
                 return {
                     "role": "admin",
                     "user_data": {
@@ -59,13 +66,14 @@ class AuthRepository:
                     }
                 }
 
-            # Verificar si es vendedor
+            print("Verificando si el usuario es vendedor")
             sales_advisor = session.query(SalesAdvisor).filter(
                 SalesAdvisor.id_user == user.id,
                 SalesAdvisor.state == 1
             ).first()
 
             if sales_advisor:
+                print(f"Usuario es vendedor: {sales_advisor}")
                 return {
                     "role": "user",
                     "user_data": {
@@ -76,6 +84,7 @@ class AuthRepository:
                     }
                 }
 
+            print("Usuario no activo")
             return {
                 "error": "Usuario no se encuentra activo. Contáctese con el Administrador",
                 "role": "invalid",
@@ -83,6 +92,7 @@ class AuthRepository:
             }
 
         except Exception as e:
+            print(f"Error en auth_email: {str(e)}")
             logging.error(f"Error en auth_email: {str(e)}")
             return {
                 "error": f"Error directo: {str(e)}",
@@ -90,5 +100,7 @@ class AuthRepository:
                 "user_data": None
             }
         finally:
+            print("Cerrando sesión de base de datos")
             session.close()
+
 
